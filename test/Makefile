@@ -14,4 +14,4 @@ test: test.cpp
 all: test
 
 clean:
-	rm *.o test -rf
+	rm test -f
