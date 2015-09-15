@@ -6,6 +6,8 @@
 // Units
 #include "units.h"
 
+namespace units {
+
 namespace weight {
 
 namespace detail {
@@ -13,7 +15,7 @@ namespace detail {
 struct weight_tag {};
 
 template <typename rep_, typename fraction_>
-using weight = units::units<rep_, fraction_, weight_tag>;
+using weight = units<rep_, fraction_, weight_tag>;
 
 } // namespace detail
 
@@ -61,5 +63,7 @@ using metric_tons = detail::weight<
 
 
 } // namespace weight
+
+} // namespace units
 
 #endif//WEIGHT_H

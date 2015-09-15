@@ -6,6 +6,8 @@
 // Units
 #include "units.h"
 
+namespace units {
+
 namespace distance {
 
 namespace detail {
@@ -13,7 +15,7 @@ namespace detail {
 struct distance_tag {};
 
 template <typename rep_, typename fraction_>
-using distance = units::units<rep_, fraction_, distance_tag>;
+using distance = units<rep_, fraction_, distance_tag>;
 
 } // namespace detail
 
@@ -59,5 +61,7 @@ using kilometers = detail::distance<
                              typename meters<rep>::fraction> >;
 
 } // namespace distance
+
+} // namespace units
 
 #endif//DISTANCE_H
