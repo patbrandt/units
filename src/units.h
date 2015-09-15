@@ -1,7 +1,7 @@
 #ifndef UNITS_H
 #define UNITS_H
 
-#include <iostream>
+// STL
 #include <ratio>
 #include <type_traits>
 
@@ -21,7 +21,7 @@ struct is_unit<units<rep, fraction, units_tag> > : std::true_type {};
 template <typename u1, typename u2>
 struct is_unit_convertible : std::false_type {};
 
-// Only units with identical type tags can be converted
+// Only units with identical tags can be converted
 template <typename rep1, typename fraction1,
           typename rep2, typename fraction2, typename units_tag>
 struct is_unit_convertible<units<rep1, fraction1, units_tag>,
@@ -186,20 +186,6 @@ struct units {
 private:
     rep value_;
 };
-
-// template <class rep1, class fraction, class rep2>
-// inline constexpr
-// typename std::enable_if <!is_unit<rep2>,
-//                          typename unit_divide_result<
-//                              unit<rep1, fraction>, Rep2>::type
-//                          >::type
-// operator/(const units<rep1, fraction> &u, const rep2& s)
-// {
-//     typedef typename common_type<rep1, rep2>::type common_rep;
-//     typedef units<common_rep, fraction> common_unit;
-
-//     return common_unit(common_unit(u).count()/static_cast<common_rep>(s));
-// }
 
 } // namespace units
 

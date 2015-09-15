@@ -2,7 +2,7 @@
 #define DISTANCE_H
 
 // STL
-#include <type_traits>
+#include <ratio>
 // Units
 #include "units.h"
 
