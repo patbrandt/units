@@ -46,11 +46,19 @@ TEST(UnitsTest, Weights) {
 }
 
 TEST(UnitsTest, UnitsPair) {
+    // Test basic construction via multiplication
     using grams = weight::grams<float>;
     using yards = distance::yards<float>;
     auto gy = grams(5) * yards(3);
     EXPECT_FLOAT_EQ(15.f, gy.amount());
 
+    // Test basic construction via division
+    using stones = weight::stones<float>;
+    using inches = distance::inches<float>;
+    auto si = stones(10) / inches(2);
+    EXPECT_FLOAT_EQ(5.f, si.amount());
+
+    // Test manual conversion
     using pounds = weight::pounds<float>;
     using meters = distance::meters<float>;
     using poundmeters = units_pair<float, pounds::fraction, meters::fraction,
