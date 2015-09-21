@@ -64,7 +64,7 @@ struct units_pair : public detail::units_base<rep_> {
 template <typename rep,
           typename fraction1, typename units_tag1,
           typename fraction2, typename units_tag2>
-auto //constexpr units_pair<rep, fraction1, fraction2, units_tag1, units_tag2>
+constexpr units_pair<rep, fraction1, fraction2, units_tag1, units_tag2>
 operator*(const units<rep, fraction1, units_tag1> &u1,
           const units<rep, fraction2, units_tag2> &u2) {
     return units_pair<rep, fraction1, fraction2, units_tag1, units_tag2>(
