@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "distance.h"
+#include "units_pair.h"
 #include "weight.h"
 
 using namespace units;
@@ -42,4 +43,18 @@ TEST(UnitsTest, Weights) {
     using metric_tons = weight::metric_tons<float>;
     auto st = short_tons(1);
     EXPECT_FLOAT_EQ(0.907184f, units_cast<metric_tons>(st).amount());
+}
+
+TEST(UnitsTest, UnitsPair) {
+    using grams = weight::grams<float>;
+    using yards = distance::yards<float>;
+    auto gy = grams(5) * yards(3);
+    EXPECT_FLOAT_EQ(15.f, gy.amount());
+
+    using pounds = weight::pounds<float>;
+    using meters = distance::meters<float>;
+    using poundmeters = units_pair<float, pounds::fraction, meters::fraction,
+        pounds::units_tag, meters::units_tag>;
+    poundmeters pm(grams(5), yards(3));
+    EXPECT_FLOAT_EQ(0.0302386280, pm.amount());
 }

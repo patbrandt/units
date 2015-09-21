@@ -1,7 +1,7 @@
 #CC=/path/to/compiler
 #GTEST_DIR=/path/to/googletest
 #LIBS=$(GTEST_DIR)/lib/libgtest.a
-CFLAGS=-std=c++11
+CFLAGS=-std=c++14
 INCLUDES=-I$(GTEST_DIR)/include -I../src
 LDFLAGS=-pthread
 
