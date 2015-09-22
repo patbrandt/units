@@ -163,7 +163,7 @@ units_cast(const units<rep, fraction, units_tag> &u) {
     typedef typename to_unit::rep to_rep;
     typedef typename to_unit::fraction to_fraction;
     typedef std::ratio_divide<fraction, to_fraction> common_fraction;
-    typedef typename std::common_type<to_rep, rep, std::intmax_t>::type common_rep;
+    typedef typename std::common_type<to_rep, rep>::type common_rep;
     typedef detail::units_cast_impl<to_unit, common_fraction, common_rep,
         common_fraction::num==1, common_fraction::den==1> uc;
 
