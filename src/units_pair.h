@@ -50,21 +50,6 @@ struct units_pair : public detail::units_base<rep_> {
 
     units_operator pair_operator() const { return op_; }
 
-    // template<typename fraction1, typename fraction2>
-    // constexpr units_pair(
-    //     const units_pair<rep, fraction1, fraction2, units_tag1_, units_tag2_> &up)
-    //     : detail::units_base<rep>(
-    //         units_operator()(
-    //             units_cast<units1, rep, fraction1, units_tag1_>(up.amount()).amount(),
-    //             units_cast<units2, rep, fraction2, units_tag2_>(1).amount())) {}
-
-    // template<typename fraction1, typename fraction2>
-    // constexpr units_pair(
-    //     const units_pair<rep, fraction1, fraction2, units_tag2_, units_tag1_> &up)
-    //     : detail::units_base<rep>(
-    //         units_cast<units1, rep, fraction1, units_tag1_>(up.amount()).amount(),
-    //         units_cast<units2, rep, fraction2, units_tag2_>(1).amount())) {}
-
 private:
     units_operator op_;
 };
