@@ -90,7 +90,7 @@ template <typename to_unit, typename common_fraction, typename common_rep,
 struct units_cast_impl {
     template <typename rep_, typename fraction_, typename units_tag_>
     static constexpr to_unit cast(const units<rep_, fraction_, units_tag_> &u) {
-        typedef typename to_unit::rep to_rep;
+        using to_rep = typename to_unit::rep;
         return to_unit(static_cast<to_rep>(static_cast<common_rep>(u.amount()) *
                                            static_cast<common_rep>(common_fraction::num) /
                                            static_cast<common_rep>(common_fraction::den)));
@@ -102,7 +102,7 @@ template <typename to_unit, typename common_fraction, typename common_rep>
 struct units_cast_impl<to_unit, common_fraction, common_rep, true, true> {
     template <typename rep_, typename fraction_, typename units_tag_>
     static constexpr to_unit cast(const units<rep_, fraction_, units_tag_> &u) {
-        typedef typename to_unit::rep to_rep;
+        using to_rep = typename to_unit::rep;
         return to_unit(static_cast<to_rep>(u.amount()));
     }
 };
@@ -112,7 +112,7 @@ template <typename to_unit, typename common_fraction, typename common_rep>
 struct units_cast_impl<to_unit, common_fraction, common_rep, true, false> {
     template <typename rep_, typename fraction_, typename units_tag_>
     static constexpr to_unit cast(const units<rep_, fraction_, units_tag_> &u) {
-        typedef typename to_unit::rep to_rep;
+        using to_rep = typename to_unit::rep;
         return to_unit(static_cast<to_rep>(static_cast<common_rep>(u.amount()) /
                                            static_cast<common_rep>(common_fraction::den)));
     }
@@ -123,7 +123,7 @@ template <typename to_unit, typename common_fraction, typename common_rep>
 struct units_cast_impl<to_unit, common_fraction, common_rep, false, true> {
     template <typename rep_, typename fraction_, typename units_tag_>
     static constexpr to_unit cast(const units<rep_, fraction_, units_tag_> &u) {
-        typedef typename to_unit::rep to_rep;
+        using to_rep = typename to_unit::rep;
         return to_unit(static_cast<to_rep>(static_cast<common_rep>(u.amount()) *
                                            static_cast<common_rep>(common_fraction::num)));
     }
@@ -160,12 +160,12 @@ constexpr typename std::enable_if<is_unit<to_unit>::value, to_unit>::type
 units_cast(const units<rep, fraction, units_tag> &u) {
     static_assert(is_unit_convertible<to_unit, units<rep, fraction, units_tag> >::value,
                   "units must be convertible in order to cast");
-    typedef typename to_unit::rep to_rep;
-    typedef typename to_unit::fraction to_fraction;
-    typedef std::ratio_divide<fraction, to_fraction> common_fraction;
-    typedef typename std::common_type<to_rep, rep>::type common_rep;
-    typedef detail::units_cast_impl<to_unit, common_fraction, common_rep,
-        common_fraction::num==1, common_fraction::den==1> uc;
+    using to_rep = typename to_unit::rep;
+    using to_fraction = typename to_unit::fraction;
+    using common_fraction = std::ratio_divide<fraction, to_fraction>;
+    using common_rep = typename std::common_type<to_rep, rep>::type;
+    using uc = detail::units_cast_impl<to_unit, common_fraction, common_rep,
+        common_fraction::num == 1, common_fraction::den == 1>;
 
     return uc::cast(u);
 }
