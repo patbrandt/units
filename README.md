@@ -11,8 +11,8 @@ Confusion about units has bitten most programmers at some point in their career.
 Is ugly, opaque, and possibly wrong. I won't kid myself. But my hope is that it will (eventually) be easy to use and will be hard/impossible to use incorrectly (because that leads to rockets whiffing planets).
 
     using namespace units;
-    using distance::inches;
-    using distance::millimeters;
-    auto length_in_inches = inches<float>(5);
-    millimeters<float> length_in_mm = length_in_inches; // implicitly converted
+    using inches = distance::inches<float>;
+    using millimeters = distance::millimeters<float>;
+    auto length_in_inches = inches(5);
+    millimeters length_in_mm = length_in_inches; // implicitly converted
     auto length_in_mm2 = units_cast<millimeters>(length_in_inches); // explicitly converted
