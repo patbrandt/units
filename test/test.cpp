@@ -61,8 +61,7 @@ TEST(UnitsTest, UnitsPair) {
     // Test manual conversion
     using pounds = weight::pounds<float>;
     using meters = distance::meters<float>;
-    using poundmeters = units_pair<float, pounds::fraction, meters::fraction,
-        pounds::units_tag, meters::units_tag>;
+    using poundmeters = units_pair<pounds, meters>;
     poundmeters pm(grams(5), yards(3));
     EXPECT_FLOAT_EQ(0.0302386280, pm.amount());
 }
