@@ -21,7 +21,6 @@ struct units_base {
     units_base(units_base&&) = default;
     units_base& operator=(const units_base&) = default;
     units_base& operator=(units_base&&) = default;
-    ~units_base() = default;
 
     units_base(const rep& v) : value_(v) {}
 
@@ -81,6 +80,9 @@ struct units_base {
         value_ %= u.amount();
         return *this;
     }
+
+protected:
+    ~units_base() = default;
 
 private:
     rep value_;
