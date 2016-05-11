@@ -19,7 +19,9 @@ struct units_pair : public detail::units_base<
 
     constexpr units_pair() = default;
     units_pair(const units_pair&) = default;
+    units_pair(units_pair&&) = default;
     units_pair& operator=(const units_pair&) = default;
+    units_pair& operator=(units_pair&&) = default;
     ~units_pair() = default;
 
     constexpr units_pair(const units1 &u1, const units2 &u2,

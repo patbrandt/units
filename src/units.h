@@ -18,7 +18,9 @@ struct units_base {
 
     constexpr units_base() = default;
     units_base(const units_base&) = default;
+    units_base(units_base&&) = default;
     units_base& operator=(const units_base&) = default;
+    units_base& operator=(units_base&&) = default;
     ~units_base() = default;
 
     units_base(const rep& v) : value_(v) {}
@@ -179,7 +181,9 @@ struct units : public detail::units_base<rep_> {
 
     constexpr units() = default;
     units(const units&) = default;
+    units(units&&) = default;
     units& operator=(const units&) = default;
+    units& operator=(units&&) = default;
     ~units() = default;
 
     template<typename rep2,
