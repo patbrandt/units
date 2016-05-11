@@ -22,14 +22,14 @@ struct units_pair : public detail::units_base<
     units_pair(units_pair&&) = default;
     units_pair& operator=(const units_pair&) = default;
     units_pair& operator=(units_pair&&) = default;
-    ~units_pair() = default;
+    ~units_pair() noexcept = default;
 
     constexpr units_pair(const units1 &u1, const units2 &u2,
                          units_operator op = std::multiplies<rep>())
         : detail::units_base<rep>(op(units_cast<units1>(u1).amount(),
                                      units_cast<units2>(u2).amount())),
         op_(op) {}
-    
+
     units_operator pair_operator() const { return op_; }
 
 private:

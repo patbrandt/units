@@ -82,7 +82,7 @@ struct units_base {
     }
 
 protected:
-    ~units_base() = default;
+    ~units_base() noexcept = default;
 
 private:
     rep value_;
@@ -186,7 +186,7 @@ struct units : public detail::units_base<rep_> {
     units(units&&) = default;
     units& operator=(const units&) = default;
     units& operator=(units&&) = default;
-    ~units() = default;
+    ~units() noexcept = default;
 
     template<typename rep2,
              typename = typename std::enable_if<
