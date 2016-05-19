@@ -12,82 +12,6 @@ struct units;
 
 namespace detail {
 
-template <typename rep_>
-struct units_base {
-    using rep = rep_;
-
-    constexpr units_base() = default;
-    units_base(const units_base&) = default;
-    units_base(units_base&&) = default;
-    units_base& operator=(const units_base&) = default;
-    units_base& operator=(units_base&&) = default;
-
-    units_base(const rep& v) : value_(v) {}
-
-    constexpr rep amount() const { return value_; }
-
-    constexpr units_base operator+() const { return *this; }
-    constexpr units_base operator-() const { return units_base(-value_); }
-
-    units_base& operator++() {
-        ++value_;
-        return *this;
-    }
-
-    units_base operator++(int) {
-        return units_base(value_++);
-    }
-
-    units_base& operator--() {
-        --value_;
-        return *this;
-    }
-
-    units_base operator--(int) {
-        return units_base(value_--);
-    }
-
-    units_base operator+=(const units_base &u) {
-        value_ += u.amount();
-        return *this;
-    }
-
-    units_base operator-=(const units_base &u) {
-        value_ -= u.amount();
-        return *this;
-    }
-
-    units_base operator*=(const units_base &u) {
-        value_ *= u.amount();
-        return *this;
-    }
-
-    units_base operator/=(const units_base &u) {
-        value_ /= u.amount();
-        return *this;
-    }
-
-    template <typename rep2 = rep>
-    typename std::enable_if<!std::is_floating_point<rep2>::value, units_base&>
-    operator%=(const rep2 &rhs) {
-        value_ %= rhs;
-        return *this;
-    }
-
-    template <typename rep2 = rep>
-    typename std::enable_if<!std::is_floating_point<rep2>::value, units_base&>
-    operator%=(const units_base &u) {
-        value_ %= u.amount();
-        return *this;
-    }
-
-protected:
-    ~units_base() noexcept = default;
-
-private:
-    rep value_;
-};
-
 // unit_cast implementation: general case
 template <typename to_unit, typename common_fraction, typename common_rep,
           bool num_one = false, bool den_one = false>
@@ -176,8 +100,8 @@ units_cast(const units<rep, fraction, units_tag> &u) {
 
 // units template
 template <typename rep_, typename fraction_, typename units_tag_>
-struct units : public detail::units_base<rep_> {
-    using rep = typename detail::units_base<rep_>::rep;
+struct units {
+    using rep = rep_;
     using fraction = fraction_;
     using units_tag = units_tag_;
 
@@ -188,22 +112,146 @@ struct units : public detail::units_base<rep_> {
     units& operator=(units&&) = default;
     ~units() noexcept = default;
 
-    template<typename rep2,
-             typename = typename std::enable_if<
-                 std::is_convertible<rep2, rep>::value &&
-                 (std::is_floating_point<rep>::value ||
-                  !std::is_floating_point<rep2>::value)>::type>
+    template <typename rep2,
+              typename = typename std::enable_if<
+                  std::is_convertible<rep2, rep>::value &&
+                  (std::is_floating_point<rep>::value ||
+                   !std::is_floating_point<rep2>::value)>::type>
     constexpr explicit units(const rep2& v)
-        : detail::units_base<rep>(static_cast<rep>(v)) {}
+        : value_(static_cast<rep>(v)) {}
 
-    template<typename rep2, typename fraction2,
-             typename = typename std::enable_if<
-                 std::is_floating_point<rep>::value ||
-                 (std::ratio_multiply<fraction2, fraction>::den == 1 &&
-                  !std::is_floating_point<rep2>::value)>::type>
-    constexpr units(const units<rep2, fraction2, units_tag> &u)
-        : detail::units_base<rep>(units_cast<units>(u).amount()) {}
+    template <typename rep2, typename frac2,
+              typename = typename std::enable_if<
+                  std::is_floating_point<rep>::value ||
+                  (std::ratio_multiply<frac2, fraction>::den == 1 &&
+                   !std::is_floating_point<rep2>::value)>::type>
+    constexpr units(const units<rep2, frac2, units_tag> &other)
+        : value_(static_cast<rep>(units_cast<units>(other).amount())) {}
+
+    constexpr rep amount() const { return value_; }
+
+    constexpr units operator+() const { return *this; }
+    constexpr units operator-() const { return units(-value_); }
+
+    // Addition and subtraction of units result in the same unit
+    template <typename rep2, typename frac2>
+    units& operator+=(const units<rep2, frac2, units_tag> &u2) {
+        value_ += units_cast<units>(u2).amount();
+        return *this;
+    }
+
+    template <typename rep2, typename frac2>
+    units& operator-=(const units<rep2, frac2, units_tag> &u2) {
+        value_ -= units_cast<units>(u2).amount();
+        return *this;
+    }
+
+    // Scalar adjustment of units?
+    units& operator+=(const rep &c) {
+        value_ += c;
+        return *this;
+    }
+
+    units& operator-=(const rep &c) {
+        value_ -= c;
+        return *this;
+    }
+
+    units& operator*=(const rep &c) {
+        value_ *= c;
+        return *this;
+    }
+
+    units& operator/=(const rep &c) {
+        value_ /= c;
+        return *this;
+    }
+
+private:
+    rep value_;
 };
+
+// Basic comparison operators for units
+template <typename rep, typename frac, typename ut>
+bool operator==(const units<rep, frac, ut> &ub1,
+                const units<rep, frac, ut> &ub2) noexcept {
+    return ub1.amount() == ub2.amount();
+}
+
+template <typename rep, typename frac, typename ut>
+bool operator!=(const units<rep, frac, ut> &ub1,
+                const units<rep, frac, ut> &ub2) noexcept {
+    return !(ub1 == ub2);
+}
+
+template <typename rep, typename frac, typename ut>
+bool operator>=(const units<rep, frac, ut> &ub1,
+                const units<rep, frac, ut> &ub2) noexcept {
+    return ub1.amount() >= ub2.amount();
+}
+
+template <typename rep, typename frac, typename ut>
+bool operator<=(const units<rep, frac, ut> &ub1,
+                const units<rep, frac, ut> &ub2) noexcept {
+    return ub1.amount() <= ub2.amount();
+}
+
+template <typename rep, typename frac, typename ut>
+bool operator>(const units<rep, frac, ut> &ub1,
+               const units<rep, frac, ut> &ub2) noexcept {
+    return ub1.amount() > ub2.amount();
+}
+
+template <typename rep, typename frac, typename ut>
+bool operator<(const units<rep, frac, ut> &ub1,
+               const units<rep, frac, ut> &ub2) noexcept {
+    return ub1.amount() < ub2.amount();
+}
+
+// Unit scalar math operations
+template <typename rep, typename frac, typename ut>
+units<rep, frac, ut> operator+(
+    units<rep, frac, ut> ub1, const rep &s) noexcept {
+    return ub1 += s;
+}
+
+template <typename rep, typename frac, typename ut>
+units<rep, frac, ut> operator-(
+    units<rep, frac, ut> ub1, const rep &s) noexcept {
+    return ub1 -= s;
+}
+
+template <typename rep, typename frac, typename ut>
+units<rep, frac, ut> operator*(
+    units<rep, frac, ut> ub1, const rep &s) noexcept {
+    return ub1 *= s;
+}
+
+template <typename rep, typename frac, typename ut>
+units<rep, frac, ut> operator/(
+    units<rep, frac, ut> ub1, const rep &s) noexcept {
+    return ub1 /= s;
+}
+
+// Unit addition and subtraction
+template <typename rep, typename frac, typename ut>
+units<rep, frac, ut> operator+(
+    units<rep, frac, ut> ub1, const units<rep, frac, ut> &ub2) noexcept {
+    return ub1 += ub2;
+}
+
+template <typename rep, typename frac, typename ut>
+units<rep, frac, ut> operator-(
+    units<rep, frac, ut> ub1, const units<rep, frac, ut> &ub2) noexcept {
+    return ub1 -= ub2;
+}
+
+// Dividing an operator by a like unit results in a scalar ratio
+template <typename rep, typename frac1, typename frac2, typename ut>
+rep operator/(const units<rep, frac1, ut> &ub1,
+              const units<rep, frac2, ut> &ub2) noexcept {
+    return ub1.amount() / units_cast<units<rep, frac1, ut> >(ub2).amount();
+}
 
 } // namespace units
 

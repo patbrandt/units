@@ -9,12 +9,9 @@
 namespace units {
 
 template <typename units1, typename units2>
-struct units_pair : public detail::units_base<
-    typename std::common_type<typename units1::rep,
-                              typename units2::rep>::type> {
+struct units_pair : public units1 {
 
-    using rep = typename std::common_type<
-        typename units1::rep, typename units2::rep>::type;
+    using rep = typename units1::rep;
     using units_operator = std::function<rep(const rep&, const rep&)>;
 
     constexpr units_pair() = default;
@@ -24,10 +21,13 @@ struct units_pair : public detail::units_base<
     units_pair& operator=(units_pair&&) = default;
     ~units_pair() noexcept = default;
 
+    constexpr units_pair(const rep &v, units_operator op = std::multiplies<rep>())
+        : units1(v), op_(op) {}
+
     constexpr units_pair(const units1 &u1, const units2 &u2,
                          units_operator op = std::multiplies<rep>())
-        : detail::units_base<rep>(op(units_cast<units1>(u1).amount(),
-                                     units_cast<units2>(u2).amount())),
+        : units1(op(units_cast<units1>(u1).amount(),
+                    units_cast<units2>(u2).amount())),
         op_(op) {}
 
     units_operator pair_operator() const { return op_; }
