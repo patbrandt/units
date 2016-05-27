@@ -52,7 +52,7 @@ using micrograms = detail::weight<
                              typename grams<rep>::fraction> >;
 
 template <typename rep>
-using kilogram = detail::weight<
+using kilograms = detail::weight<
     rep, std::ratio_multiply<std::kilo,
                              typename grams<rep>::fraction> >;
 
