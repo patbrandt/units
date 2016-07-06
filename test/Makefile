@@ -1,12 +1,10 @@
 #CXX=/path/to/compiler
-#GTEST_DIR=/path/to/googletest
-#LIBS=$(GTEST_DIR)/lib/libgtest.a
 CFLAGS=-std=c++11
 INCLUDES=-I$(GTEST_DIR)/include -I../src
-LDFLAGS=-pthread
+LDFLAGS=-pthread -lgtest_main
 
 test: test.cpp
-	$(CXX) $(CFLAGS) $(INCLUDES) $(LIBS) $(LDFLAGS) test.cpp -o test
+	$(CXX) $(CFLAGS) test.cpp -o test $(INCLUDES) $(LDFLAGS)
 	./test
 
 all: test
