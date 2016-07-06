@@ -1,6 +1,6 @@
 #CXX=/path/to/compiler
 CFLAGS=-std=c++11
-INCLUDES=-I$(GTEST_DIR)/include -I../src
+INCLUDES=-I../src
 LDFLAGS=-pthread -lgtest_main
 
 test: test.cpp
