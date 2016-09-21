@@ -8,7 +8,7 @@
 
 namespace units {
 
-namespace distance {
+inline namespace distance {
 
 namespace detail {
 

@@ -8,7 +8,7 @@
 
 namespace units {
 
-namespace weight {
+inline namespace weight {
 
 namespace detail {
 
