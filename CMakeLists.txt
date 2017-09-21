@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 project(units)
+SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
 
 enable_testing()
 

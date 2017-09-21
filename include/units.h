@@ -4,99 +4,11 @@
 // STL
 #include <ratio>
 #include <type_traits>
+// Units
+#include "units_cast.h"
+#include "units_traits.h"
 
 namespace units {
-
-template <typename rep_, typename fraction_, typename units_tag_>
-struct units;
-
-namespace detail {
-
-// unit_cast implementation: general case
-template <typename to_unit, typename common_fraction, typename common_rep,
-          bool num_one = false, bool den_one = false>
-struct units_cast_impl {
-    template <typename rep_, typename fraction_, typename units_tag_>
-    static constexpr to_unit cast(const units<rep_, fraction_, units_tag_> &u) {
-        using to_rep = typename to_unit::rep;
-        return to_unit(static_cast<to_rep>(static_cast<common_rep>(u.amount()) *
-                                           static_cast<common_rep>(common_fraction::num) /
-                                           static_cast<common_rep>(common_fraction::den)));
-    }
-};
-
-// unit_cast implementation: fraction is unity (1/1)
-template <typename to_unit, typename common_fraction, typename common_rep>
-struct units_cast_impl<to_unit, common_fraction, common_rep, true, true> {
-    template <typename rep_, typename fraction_, typename units_tag_>
-    static constexpr to_unit cast(const units<rep_, fraction_, units_tag_> &u) {
-        using to_rep = typename to_unit::rep;
-        return to_unit(static_cast<to_rep>(u.amount()));
-    }
-};
-
-// unit_cast implementation: fraction only has denominator
-template <typename to_unit, typename common_fraction, typename common_rep>
-struct units_cast_impl<to_unit, common_fraction, common_rep, true, false> {
-    template <typename rep_, typename fraction_, typename units_tag_>
-    static constexpr to_unit cast(const units<rep_, fraction_, units_tag_> &u) {
-        using to_rep = typename to_unit::rep;
-        return to_unit(static_cast<to_rep>(static_cast<common_rep>(u.amount()) /
-                                           static_cast<common_rep>(common_fraction::den)));
-    }
-};
-
-// unit_cast implementation: fraction only has numerator
-template <typename to_unit, typename common_fraction, typename common_rep>
-struct units_cast_impl<to_unit, common_fraction, common_rep, false, true> {
-    template <typename rep_, typename fraction_, typename units_tag_>
-    static constexpr to_unit cast(const units<rep_, fraction_, units_tag_> &u) {
-        using to_rep = typename to_unit::rep;
-        return to_unit(static_cast<to_rep>(static_cast<common_rep>(u.amount()) *
-                                           static_cast<common_rep>(common_fraction::num)));
-    }
-};
-
-} // namespace detail
-
-// Check if something is a unit type
-template <typename T>
-struct is_unit : std::false_type {};
-
-template <typename rep, typename fraction, typename units_tag>
-struct is_unit<units<rep, fraction, units_tag> > : std::true_type {};
-
-// Disable unit conversion in the general case
-template <typename u1, typename u2>
-struct is_unit_convertible : std::false_type {};
-
-// Only units with identical tags can be converted
-template <typename rep1, typename fraction1,
-          typename rep2, typename fraction2, typename units_tag>
-struct is_unit_convertible<units<rep1, fraction1, units_tag>,
-                           units<rep2, fraction2, units_tag> > : std::true_type {
-    static_assert(std::is_convertible<rep1, rep2>::value,
-                  "unit reps must be convertible");
-    static_assert(std::is_floating_point<rep1>::value ||
-                  !std::is_floating_point<rep2>::value,
-                  "cannot mix floating and integral types in unit conversion");
-};
-
-// units_cast
-template <typename to_unit, typename rep, typename fraction, typename units_tag>
-constexpr typename std::enable_if<is_unit<to_unit>::value, to_unit>::type
-units_cast(const units<rep, fraction, units_tag> &u) {
-    static_assert(is_unit_convertible<to_unit, units<rep, fraction, units_tag> >::value,
-                  "units must be convertible in order to cast");
-    using to_rep = typename to_unit::rep;
-    using to_fraction = typename to_unit::fraction;
-    using common_fraction = std::ratio_divide<fraction, to_fraction>;
-    using common_rep = typename std::common_type<to_rep, rep>::type;
-    using uc = detail::units_cast_impl<to_unit, common_fraction, common_rep,
-        common_fraction::num == 1, common_fraction::den == 1>;
-
-    return uc::cast(u);
-}
 
 // units template
 template <typename rep_, typename fraction_, typename units_tag_>
